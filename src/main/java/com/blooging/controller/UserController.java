@@ -22,46 +22,38 @@ import com.blooging.services.UserService;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-	
-	
 	@Autowired
 	private UserService userService;
-	
+
 	// User Create
-	
 	@PostMapping("/")
 	public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
 		UserDto createUserDto =this.userService.createUser(userDto);
-		
 		return new ResponseEntity<>(createUserDto,HttpStatus.CREATED);
-		
 	}
 	
 	// Update User
 	@PutMapping("/{userId}")
 	public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto,@PathVariable("userId") Integer id){
-		
 		UserDto  updatedUser = this.userService.updateUser(userDto, id);
 		return ResponseEntity.ok(updatedUser);
 	}
-	
 	// Delete User
 	@DeleteMapping("/{userId}")
 	public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId")Integer id){
-		
 		this.userService.deleteUser(id);
-		
 		return new ResponseEntity(new ApiResponse("Deletd",true),HttpStatus.OK);
 	}
-
 	// Get user  list
 	@GetMapping("/")
 	public ResponseEntity<List<UserDto>> getAllU(){
 		return ResponseEntity.ok(this.userService.getAllUsers());
 	}
-	
+
+	//Get Single User
 	@GetMapping("/{userId}")
 	public ResponseEntity<UserDto> getSingleUser(@PathVariable("userId")Integer id){
 		return ResponseEntity.ok(this.userService.getUserById(id));
 	}
+
 }
