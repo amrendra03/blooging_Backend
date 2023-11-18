@@ -8,7 +8,7 @@ public class BloogingApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BloogingApplication.class, args);
-		System.out.println("Started...");
+		System.out.println("Started....");
 	}
 
 }
