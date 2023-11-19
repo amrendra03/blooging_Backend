@@ -1,12 +1,13 @@
 package com.blooging.controller;
 
 import java.util.List;
-import java.util.Map;
 
+import com.blooging.payloads.Test;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,38 +24,69 @@ import com.blooging.services.UserService;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	// User Create
-	@PostMapping("/")
-	public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
-		UserDto createUserDto =this.userService.createUser(userDto);
-		return new ResponseEntity<>(createUserDto,HttpStatus.CREATED);
-	}
-	
-	// Update User
-	@PutMapping("/{userId}")
-	public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto,@PathVariable("userId") Integer id){
-		UserDto  updatedUser = this.userService.updateUser(userDto, id);
-		return ResponseEntity.ok(updatedUser);
-	}
-	// Delete User
-	@DeleteMapping("/{userId}")
-	public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId")Integer id){
-		this.userService.deleteUser(id);
-		return new ResponseEntity(new ApiResponse("Deletd",true),HttpStatus.OK);
-	}
-	// Get user  list
-	@GetMapping("/")
-	public ResponseEntity<List<UserDto>> getAllU(){
-		return ResponseEntity.ok(this.userService.getAllUsers());
-	}
+    // User Create
+    @PostMapping("/")
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDto userDto, BindingResult bindingResult) {
 
-	//Get Single User
-	@GetMapping("/{userId}")
-	public ResponseEntity<UserDto> getSingleUser(@PathVariable("userId")Integer id){
-		return ResponseEntity.ok(this.userService.getUserById(id));
-	}
+        System.out.println("---" + userDto);
+        UserDto createUserDto = null;
+        if (bindingResult.hasErrors()) {
+            System.out.println(bindingResult);
+            ApiResponse apiResponse = new ApiResponse("Failed validation", false);
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        }
+        createUserDto = this.userService.createUser(userDto);
+
+        return new ResponseEntity<>(createUserDto, HttpStatus.CREATED);
+    }
+
+    // Update User
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, @PathVariable("userId") Integer id) {
+        UserDto updatedUser = this.userService.updateUser(userDto, id);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    // Delete User
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") Integer id) {
+        this.userService.deleteUser(id);
+        return new ResponseEntity(new ApiResponse("Deletd", true), HttpStatus.OK);
+    }
+
+    // Get user  list
+    @GetMapping("/")
+    public ResponseEntity<List<UserDto>> getAllU() {
+        return ResponseEntity.ok(this.userService.getAllUsers());
+    }
+
+    //Get Single User
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDto> getSingleUser(@PathVariable("userId") Integer id) {
+        return ResponseEntity.ok(this.userService.getUserById(id));
+    }
+
+
+    @PostMapping("/test")
+    public ResponseEntity<Test> test(@Valid @RequestBody UserDto persion, BindingResult bindingResult) {
+
+        System.out.println("calling  test ...");
+        System.out.println(persion);
+
+        Test test = new Test();
+        test.setName("ok");
+        test.setAge(1);
+
+        System.out.println("-----X---  " + bindingResult);
+        if (bindingResult.hasErrors()) {
+            test.setName("ERROR");
+            return new ResponseEntity<>(test, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(test, HttpStatus.CREATED);
+    }
 
 }
