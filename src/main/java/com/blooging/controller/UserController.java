@@ -1,6 +1,8 @@
 package com.blooging.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.blooging.payloads.Test;
 import jakarta.validation.Valid;
@@ -34,10 +36,12 @@ public class UserController {
         System.out.println("---" + userDto);
         UserDto createUserDto = null;
         if (bindingResult.hasErrors()) {
-            System.out.println(bindingResult);
-            ApiResponse apiResponse = new ApiResponse("Failed validation", false);
-            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach((error) ->
+                    errors.put(error.getField(), error.getDefaultMessage()));
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
+
         createUserDto = this.userService.createUser(userDto);
 
         return new ResponseEntity<>(createUserDto, HttpStatus.CREATED);
@@ -45,7 +49,7 @@ public class UserController {
 
     // Update User
     @PutMapping("/{userId}")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, @PathVariable("userId") Integer id) {
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userDto, @PathVariable("userId") Integer id) {
         UserDto updatedUser = this.userService.updateUser(userDto, id);
         return ResponseEntity.ok(updatedUser);
     }
