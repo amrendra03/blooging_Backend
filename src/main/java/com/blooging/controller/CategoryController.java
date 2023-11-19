@@ -3,6 +3,7 @@ package com.blooging.controller;
 import com.blooging.payloads.ApiResponse;
 import com.blooging.payloads.CategoryDto;
 import com.blooging.services.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class CategoryController {
 
     // Create
     @PostMapping("/")
-    public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto categoryDto){
+    public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto categoryDto){
 
         System.out.println(categoryDto);
         CategoryDto createCategory = this.categoryService.createCategory(categoryDto);
@@ -32,7 +33,7 @@ public class CategoryController {
     // Update
 
     @PutMapping("/{catId}")
-    public ResponseEntity<CategoryDto> updateCategory (@RequestBody CategoryDto categoryDto, @PathVariable Integer catId)
+    public ResponseEntity<CategoryDto> updateCategory (@Valid @RequestBody CategoryDto categoryDto, @PathVariable Integer catId)
     {
 //        System.out.println(categoryDto);
 //        System.out.println(catId);

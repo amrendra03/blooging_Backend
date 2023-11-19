@@ -1,6 +1,8 @@
 package com.blooging.exceptions;
 
 import com.blooging.payloads.ApiResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -31,5 +34,18 @@ public class GlobalExceptionHandler {
         });
 
         return new ResponseEntity<Map<String ,String>>(resp,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, String>> handleConstraintViolationException(ConstraintViolationException ex) {
+        // Assuming you have a method in your ApiResponse class to handle messages
+        Map<String, String> resp = new HashMap<>();
+        Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
+        for (ConstraintViolation<?> violation : constraintViolations) {
+            String fieldName = violation.getPropertyPath().toString();
+            String message = violation.getMessage();
+            resp.put(fieldName, message);
+        }
+        return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
     }
 }
