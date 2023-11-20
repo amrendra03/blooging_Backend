@@ -1,6 +1,7 @@
 package com.blooging.controller;
 
 import com.blooging.entities.Post;
+import com.blooging.payloads.ApiResponse;
 import com.blooging.payloads.PostDto;
 import com.blooging.services.PostService;
 import org.modelmapper.ModelMapper;
@@ -9,8 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/api")
 public class PostController {
 
     @Autowired
@@ -33,5 +36,50 @@ public class PostController {
             System.out.println(ex.getMessage());
         }
         return new ResponseEntity<PostDto>(post, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // get post by user
+    @GetMapping("/user/{userId}/posts")
+    public ResponseEntity<List<PostDto>> getPostByUser(@PathVariable Integer userId){
+        List<PostDto>post = this.postService.getPostByUser(userId);
+        return new ResponseEntity<List<PostDto>>(post,HttpStatus.OK);
+    }
+
+    // get post by Category
+    @GetMapping("/category/{categoryId}/posts")
+    public ResponseEntity<List<PostDto>> getPostByCategory(@PathVariable Integer categoryId){
+        List<PostDto> post = this.postService.getPostByCategory(categoryId);
+        return new ResponseEntity<List<PostDto>>(post,HttpStatus.OK);
+    }
+
+    // get all  post
+
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostDto>> getAllPost(){
+        List<PostDto> post = this.postService.getAllPost();
+        return new ResponseEntity<List<PostDto>>(post,HttpStatus.OK);
+    }
+    // get post by id
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<PostDto> getPostById(@PathVariable Integer postId){
+        PostDto post = this.postService.getPostById(postId);
+        return  new ResponseEntity<PostDto>(post,HttpStatus.OK);
+    }
+
+    // Delete post
+
+    @DeleteMapping("/posts/{postId}")
+    public ApiResponse postDelete(@PathVariable  Integer postId){
+        this.postService.deletePost(postId);
+        return  new ApiResponse("Successfully deleted post",true);
+    }
+
+    @PutMapping("/posts/{postId}")
+    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto,@PathVariable Integer postId){
+//        System.out.println("form update post controller...");
+//        System.out.println(postId);
+        PostDto post = this.postService.updatePost(postDto,postId);
+//        System.out.println(post);
+        return new ResponseEntity<PostDto>(post,HttpStatus.OK);
     }
 }
