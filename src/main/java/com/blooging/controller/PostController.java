@@ -31,7 +31,7 @@ public class PostController {
         try {
             post = this.postService.createPost(postDto, userId, categoryId);
             System.out.println(post);
-            return new ResponseEntity<PostDto>(post,HttpStatus.CREATED);
+            return new ResponseEntity<PostDto>(post, HttpStatus.CREATED);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
@@ -40,46 +40,56 @@ public class PostController {
 
     // get post by user
     @GetMapping("/user/{userId}/posts")
-    public ResponseEntity<List<PostDto>> getPostByUser(@PathVariable Integer userId){
-        List<PostDto>post = this.postService.getPostByUser(userId);
-        return new ResponseEntity<List<PostDto>>(post,HttpStatus.OK);
+    public ResponseEntity<List<PostDto>> getPostByUser(@PathVariable Integer userId) {
+        List<PostDto> post = this.postService.getPostByUser(userId);
+        return new ResponseEntity<List<PostDto>>(post, HttpStatus.OK);
     }
 
     // get post by Category
     @GetMapping("/category/{categoryId}/posts")
-    public ResponseEntity<List<PostDto>> getPostByCategory(@PathVariable Integer categoryId){
+    public ResponseEntity<List<PostDto>> getPostByCategory(@PathVariable Integer categoryId) {
         List<PostDto> post = this.postService.getPostByCategory(categoryId);
-        return new ResponseEntity<List<PostDto>>(post,HttpStatus.OK);
+        return new ResponseEntity<List<PostDto>>(post, HttpStatus.OK);
     }
 
     // get all  post
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostDto>> getAllPost(){
-        List<PostDto> post = this.postService.getAllPost();
-        return new ResponseEntity<List<PostDto>>(post,HttpStatus.OK);
+    public ResponseEntity<List<PostDto>> getAllPost(
+            @RequestParam(value = "pageNumber", defaultValue = "1", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize
+    ) {
+        System.out.println("from get all post ......");
+        List<PostDto> post = this.postService.getAllPost(pageNumber, pageSize);
+        System.out.println(pageNumber+" "+pageSize);
+        System.out.println(post);
+        for(PostDto x:post){
+            System.out.println(x.getPostId()+" "+x.getContent());
+        }
+        return new ResponseEntity<List<PostDto>>(post, HttpStatus.OK);
     }
+
     // get post by id
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<PostDto> getPostById(@PathVariable Integer postId){
+    public ResponseEntity<PostDto> getPostById(@PathVariable Integer postId) {
         PostDto post = this.postService.getPostById(postId);
-        return  new ResponseEntity<PostDto>(post,HttpStatus.OK);
+        return new ResponseEntity<PostDto>(post, HttpStatus.OK);
     }
 
     // Delete post
 
     @DeleteMapping("/posts/{postId}")
-    public ApiResponse postDelete(@PathVariable  Integer postId){
+    public ApiResponse postDelete(@PathVariable Integer postId) {
         this.postService.deletePost(postId);
-        return  new ApiResponse("Successfully deleted post",true);
+        return new ApiResponse("Successfully deleted post", true);
     }
 
     @PutMapping("/posts/{postId}")
-    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto,@PathVariable Integer postId){
+    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable Integer postId) {
 //        System.out.println("form update post controller...");
 //        System.out.println(postId);
-        PostDto post = this.postService.updatePost(postDto,postId);
+        PostDto post = this.postService.updatePost(postDto, postId);
 //        System.out.println(post);
-        return new ResponseEntity<PostDto>(post,HttpStatus.OK);
+        return new ResponseEntity<PostDto>(post, HttpStatus.OK);
     }
 }

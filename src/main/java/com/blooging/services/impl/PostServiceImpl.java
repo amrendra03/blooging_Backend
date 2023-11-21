@@ -12,6 +12,9 @@ import com.blooging.repository.UserRepo;
 import com.blooging.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -71,8 +74,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPost() {
-        List<Post> allPost = this.postRepo.findAll();
+    public List<PostDto> getAllPost(Integer pageNumber,Integer pageSize) {
+
+        Pageable p = PageRequest.of(pageNumber,pageSize);
+
+        Page<Post> pagePost = this.postRepo.findAll(p);
+        List<Post> allPost = pagePost.getContent();
         List<PostDto> postDto = allPost.stream().map((post)->this.modelMapper.map(post,PostDto.class)).collect(Collectors.toList());
         return postDto;
     }
