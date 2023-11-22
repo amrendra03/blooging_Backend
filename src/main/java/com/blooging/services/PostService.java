@@ -2,6 +2,7 @@ package com.blooging.services;
 
 import com.blooging.entities.Post;
 import com.blooging.payloads.PostDto;
+import com.blooging.payloads.PostResponse;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface PostService {
 
     void deletePost(Integer postId);
 
-    List<PostDto> getAllPost(Integer pageNumber,Integer pageSize);
+    PostResponse getAllPost(Integer pageNumber, Integer pageSize,String sortBy);
 
     PostDto getPostById(Integer postId);
 

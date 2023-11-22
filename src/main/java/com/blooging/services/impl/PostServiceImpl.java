@@ -6,6 +6,7 @@ import com.blooging.entities.User;
 import com.blooging.exceptions.ResourceNotFoundException;
 import com.blooging.payloads.CategoryDto;
 import com.blooging.payloads.PostDto;
+import com.blooging.payloads.PostResponse;
 import com.blooging.repository.CategoryRepo;
 import com.blooging.repository.PostRepo;
 import com.blooging.repository.UserRepo;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -74,14 +76,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPost(Integer pageNumber,Integer pageSize) {
+    public PostResponse getAllPost(Integer pageNumber, Integer pageSize,String sortBy) {
 
-        Pageable p = PageRequest.of(pageNumber,pageSize);
+        Pageable p = PageRequest.of(pageNumber,pageSize, Sort.by(sortBy).descending());
 
         Page<Post> pagePost = this.postRepo.findAll(p);
         List<Post> allPost = pagePost.getContent();
         List<PostDto> postDto = allPost.stream().map((post)->this.modelMapper.map(post,PostDto.class)).collect(Collectors.toList());
-        return postDto;
+
+        PostResponse postResponse = new PostResponse();
+
+        postResponse.setContent(postDto);
+        postResponse.setPageNumber(pagePost.getNumber());
+        postResponse.setPageSize(pagePost.getSize());
+        postResponse.setTotalPage(pagePost.getTotalPages());
+        postResponse.setTotalElement(pagePost.getTotalElements());
+        postResponse.setLastPage(pagePost.isLast());
+        return postResponse;
     }
 
     @Override

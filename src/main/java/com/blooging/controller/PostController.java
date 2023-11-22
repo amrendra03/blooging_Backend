@@ -3,6 +3,7 @@ package com.blooging.controller;
 import com.blooging.entities.Post;
 import com.blooging.payloads.ApiResponse;
 import com.blooging.payloads.PostDto;
+import com.blooging.payloads.PostResponse;
 import com.blooging.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,18 +56,17 @@ public class PostController {
     // get all  post
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostDto>> getAllPost(
-            @RequestParam(value = "pageNumber", defaultValue = "1", required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize
+    public ResponseEntity<PostResponse> getAllPost(
+            @RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize,
+            @RequestParam(value = "sortBy",defaultValue = "postId",required = false) String sortBy
     ) {
         System.out.println("from get all post ......");
-        List<PostDto> post = this.postService.getAllPost(pageNumber, pageSize);
-        System.out.println(pageNumber+" "+pageSize);
+        PostResponse post = this.postService.getAllPost(pageNumber, pageSize, sortBy);
+//        System.out.println(pageNumber+" "+pageSize);
         System.out.println(post);
-        for(PostDto x:post){
-            System.out.println(x.getPostId()+" "+x.getContent());
-        }
-        return new ResponseEntity<List<PostDto>>(post, HttpStatus.OK);
+
+        return new ResponseEntity<PostResponse>(post, HttpStatus.OK);
     }
 
     // get post by id
