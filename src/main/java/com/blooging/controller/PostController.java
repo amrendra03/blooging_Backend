@@ -7,15 +7,20 @@ import com.blooging.payloads.PostDto;
 import com.blooging.payloads.PostResponse;
 import com.blooging.services.FileService;
 import com.blooging.services.PostService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -112,15 +117,25 @@ public class PostController {
         return new ResponseEntity<List<PostDto>>(result, HttpStatus.OK);
     }
 
+    //image upload
     @PostMapping("/posts/image/upload/{postId}")
     public ResponseEntity<PostDto> uploadPostImage(@RequestParam("image") MultipartFile image, @PathVariable Integer postId) throws IOException {
 
-        String fileName = this.fileService.uploadImage(path, image);
         PostDto postDto = this.postService.getPostById(postId);
+        String fileName = this.fileService.uploadImage(path, image);
         postDto.setImageName(fileName);
         PostDto updatedPost =  this.postService.updatePost(postDto, postId);
 
         return new ResponseEntity<PostDto>(updatedPost,HttpStatus.OK);
+    }
+
+    // image download
+    @GetMapping(value = "posts/image/{imageName}",produces = MediaType.IMAGE_JPEG_VALUE)
+    public void downloadImage(@PathVariable("imageName") String imageName, HttpServletResponse response) throws IOException {
+        System.out.println("form image download...");
+        InputStream resource = this.fileService.getResource(path,imageName);
+        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        StreamUtils.copy(resource,response.getOutputStream());
     }
 
 
