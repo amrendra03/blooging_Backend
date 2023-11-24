@@ -1,6 +1,7 @@
 package com.blooging.config;
 
 import com.blooging.security.CustomUserDetailService;
+import com.blooging.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServlet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,9 @@ public class SecurityConfig {
 
     @Autowired
     private CustomUserDetailService customUserDetailService;
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
