@@ -41,7 +41,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(
-                        (requests) -> requests.requestMatchers("/api/v1/auth/login").permitAll()
+                        (requests) -> requests.requestMatchers("/api/v1/auth/**").permitAll()
                                 .anyRequest().authenticated()
                 ).exceptionHandling(ex -> ex.authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

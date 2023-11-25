@@ -3,8 +3,12 @@ package com.blooging.services.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.blooging.config.AppConstants;
+import com.blooging.entities.Role;
+import com.blooging.repository.RoleRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.blooging.entities.User;
@@ -20,13 +24,32 @@ public class UserServiceImpl implements UserService {
 	private UserRepo userRepo;
 	@Autowired
 	 private ModelMapper modelMapper;
-	
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private RoleRepo roleRepo;
+
+	@Override
+	public UserDto registerNewUser(UserDto userDto) {
+
+		User user = this.modelMapper.map(userDto,User.class);
+		user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+
+		//role set
+		Role role = this.roleRepo.findById(AppConstants.NORMAL).get();
+		user.getRoles().add(role);
+		User newUser = this.userRepo.save(user);
+
+		return this.modelMapper.map(newUser,UserDto.class);
+	}
+
 	@Override
 	public UserDto createUser(UserDto userDto) {
 		// TODO Auto-generated method stub
 		User user = this.dtoToUser(userDto);
 		User savedUser = this.userRepo.save(user);
-		
 		return this.userToDto(savedUser);
 	}
 

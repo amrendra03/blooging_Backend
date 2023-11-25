@@ -2,8 +2,10 @@ package com.blooging.controller;
 
 import com.blooging.exceptions.ApiException;
 import com.blooging.payloads.JwtAuthRequest;
+import com.blooging.payloads.UserDto;
 import com.blooging.security.JwtAuthResponse;
 import com.blooging.security.JwtTokenHelper;
+import com.blooging.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,9 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest request) throws Exception {
         System.out.println(request + "------------");
@@ -51,5 +56,11 @@ public class AuthController {
             System.out.println("Invalid Details !!");
             throw  new ApiException("Invalid username or password !!");
         }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto){
+      UserDto userRegister =   this.userService.registerNewUser(userDto);
+      return  new ResponseEntity<UserDto>(userRegister,HttpStatus.CREATED);
     }
 }
