@@ -1,5 +1,6 @@
 package com.blooging.controller;
 
+import com.blooging.exceptions.ApiException;
 import com.blooging.payloads.JwtAuthRequest;
 import com.blooging.security.JwtAuthResponse;
 import com.blooging.security.JwtTokenHelper;
@@ -48,8 +49,7 @@ public class AuthController {
             this.authenticationManager.authenticate(authenticationToken);
         } catch (BadCredentialsException e) {
             System.out.println("Invalid Details !!");
-
-            throw  new Exception("Invalid username or password !!");
+            throw  new ApiException("Invalid username or password !!");
         }
     }
 }
